@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora do Aulão</title>
+<meta name="description" content="Quantas reuniões você faz pra fechar 1? Compara o que você faz hoje com o funil de aulão semanal, com a sua verba. Referências de mercado, editáveis.">
+<style>
+  /* tom Design System — Sala de Controle: três neutros + um sinal. Sem raio, sem sombra, sem gradiente. */
+  @font-face{font-family:'Archivo';font-style:normal;font-weight:400 800;font-display:swap;src:url('fonts/Archivo-VF-latin-ext.woff2') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+  @font-face{font-family:'Archivo';font-style:normal;font-weight:400 800;font-display:swap;src:url('fonts/Archivo-VF-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+  @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;src:url('fonts/IBMPlexMono-Regular-latin-ext.woff2') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+  @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;src:url('fonts/IBMPlexMono-Regular-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+  @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;src:url('fonts/IBMPlexMono-Medium-latin-ext.woff2') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+  @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;src:url('fonts/IBMPlexMono-Medium-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+  @font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:300 600;font-display:swap;src:url('fonts/IBMPlexSans-VF-latin-ext.woff2') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+  @font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:300 600;font-display:swap;src:url('fonts/IBMPlexSans-VF-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+  :root{
+    --grafite:#0E1012;--papel:#EEEFEA;--azul-sinal:#4D8FFF;--painel:#181B1F;--linha:#2B3036;--nota:#9AA0A6;--barra:#6B7178;--grade:#16191C;
+    --font-display:'Archivo',system-ui,sans-serif;--font-body:'IBM Plex Sans',system-ui,sans-serif;--font-mono:'IBM Plex Mono',ui-monospace,monospace;
+    --dur:160ms;--ease:cubic-bezier(.2,0,0,1);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--grafite);color:var(--papel);font-family:var(--font-body);font-weight:400;line-height:1.4;-webkit-font-smoothing:antialiased}
+  body{padding:0 16px 56px;background-image:linear-gradient(var(--grade) 1px,transparent 1px),linear-gradient(90deg,var(--grade) 1px,transparent 1px);background-size:30px 30px}
+  .wrap{max-width:1080px;margin:0 auto}
+  .lab{font-family:var(--font-mono);font-weight:400;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--nota);line-height:1.3}
+  h1{font-family:var(--font-display);font-weight:800;font-size:clamp(30px,5vw,56px);letter-spacing:-.03em;line-height:1;margin:14px 0 16px;color:var(--papel)}
+  h1 b{color:var(--azul-sinal);font-weight:800}
+  h2{font-family:var(--font-display);font-weight:800;font-size:22px;letter-spacing:-.03em;line-height:1.05;margin:0;color:var(--papel)}
+  p{margin:0}
+  .sub{color:var(--nota);max-width:620px;font-size:15px}
+  header{padding:40px 0 28px;border-bottom:1px solid var(--linha)}
+  .cab{display:flex;justify-content:space-between;gap:16px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}
+  @media (max-width:820px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--painel);border:1px solid var(--linha);position:relative}
+  .card .top{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 20px;border-bottom:1px solid var(--linha)}
+  .card .corpo{padding:18px 20px 20px}
+  .card.bracket:before{content:"";position:absolute;left:-1px;top:-1px;width:18px;height:18px;border-left:4px solid var(--azul-sinal);border-top:4px solid var(--azul-sinal)}
+  .campo{margin:14px 0 0}
+  .campo label{display:block;font-size:14px;font-weight:500;margin-bottom:6px;color:var(--papel)}
+  .campo small{display:block;color:var(--nota);font-size:12px;margin-top:5px;line-height:1.4}
+  .in{display:flex;align-items:center;border:1px solid var(--linha);background:var(--grafite);transition:border-color var(--dur) var(--ease)}
+  .in:focus-within{border-color:var(--azul-sinal)}
+  .in span{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--nota);padding:0 10px;white-space:nowrap}
+  .in input{flex:1;min-width:0;border:0;background:transparent;font-family:var(--font-mono);font-size:16px;padding:11px 12px;color:var(--papel);outline:none}
+  input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0} input[type=number]{-moz-appearance:textfield}
+  .dois{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:480px){.dois{grid-template-columns:1fr}}
+  .radios{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .radios.tres{grid-template-columns:1fr 1fr 1fr}
+  @media (max-width:480px){.radios.tres{grid-template-columns:1fr}}
+  .radios label{border:1px solid var(--linha);padding:10px 12px;font-size:14px;cursor:pointer;display:flex;gap:8px;align-items:center;background:var(--grafite);color:var(--nota);transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease)}
+  .radios label:has(input:checked){color:var(--papel);border-color:var(--papel)}
+  .radios input{accent-color:var(--azul-sinal);margin:0}
+  .chk{display:flex;gap:10px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin:16px 0 4px;color:var(--papel)}
+  .chk input{width:16px;height:16px;accent-color:var(--azul-sinal);margin:0}
+  .chk i{font-style:normal;font-weight:400;color:var(--nota)}
+  .oculto{display:none}
+  .detalhe{border:1px dashed var(--linha);padding:4px 14px 14px;margin-top:8px}
+  .fig{margin-top:40px}
+  .fig > .cab{margin-bottom:12px;align-items:baseline}
+  .funis{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:820px){.funis{grid-template-columns:1fr}}
+  .etapa{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--linha)}
+  .etapa:last-child{border-bottom:0;padding-bottom:0}
+  .etapa .n{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;color:var(--nota)}
+  .etapa .nome{font-size:14px;font-weight:500;color:var(--papel)}
+  .etapa .como{font-size:12px;color:var(--nota)}
+  .etapa .val{font-family:var(--font-mono);font-weight:500;font-size:18px;color:var(--papel);text-align:right}
+  .etapa.destaque .val{color:var(--azul-sinal)}
+  .etapa.antes .val{color:var(--nota)}
+  .barra{grid-column:2/4;height:6px;background:var(--linha);margin-top:4px}
+  .barra i{display:block;height:100%;background:var(--barra);transition:width var(--dur) var(--ease)}
+  .etapa.destaque .barra i{background:var(--azul-sinal)}
+  .heroi{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media (max-width:820px){.heroi{grid-template-columns:1fr}}
+  .heroi .par{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .heroi .k{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--nota)}
+  .big{font-family:var(--font-display);font-weight:800;font-size:clamp(40px,5vw,56px);letter-spacing:-.03em;line-height:1;margin:6px 0 4px;color:var(--papel);white-space:nowrap}
+  .big.antes{color:var(--nota)} .big.azul{color:var(--azul-sinal)}
+  .heroi .f{font-size:12px;color:var(--nota);margin-top:10px;line-height:1.4}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media (max-width:820px){.cards{grid-template-columns:1fr 1fr}}
+  @media (max-width:480px){.cards{grid-template-columns:1fr}}
+  .m{background:var(--painel);border:1px solid var(--linha)}
+  .m .t{padding:12px 16px;border-bottom:1px solid var(--linha);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--nota)}
+  .m .par{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px 12px}
+  .m .k{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--nota)}
+  .m .v{font-family:var(--font-display);font-weight:800;font-size:22px;letter-spacing:-.03em;line-height:1;margin-top:6px;color:var(--papel);word-break:break-word}
+  .m .v.a{color:var(--nota)}
+  .m .f{font-size:11px;color:var(--nota);padding:0 16px 12px}
+  .nota{font-size:13px;color:var(--nota);margin-top:14px;max-width:760px;line-height:1.5}
+  footer{margin-top:48px;border-top:1px solid var(--linha);padding-top:18px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+  footer .frase{font-family:var(--font-display);font-weight:800;font-size:16px;letter-spacing:-.03em;line-height:1.1;color:var(--papel);max-width:420px}
+  .sig{font-family:var(--font-display);font-weight:800;font-size:28px;letter-spacing:-.05em;line-height:1;color:var(--papel);white-space:nowrap}
+  .sig i{display:inline-block;width:.23em;height:.23em;background:var(--azul-sinal);margin-left:.1em;vertical-align:baseline}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="cab"><span class="lab">calculadora · aulão semanal</span><span class="lab">referência de mercado · out/2026</span></div>
+  <h1>quantas reuniões você faz pra fechar <b>1</b>?</h1>
+  <p class="sub">Compara o que você faz hoje com o funil de aulão semanal, com a tua verba. Preenche investimento, custo por lead e ticket. O resto é referência de mercado, e você escolhe se quer ver o cenário pessimista, realista ou otimista.</p>
+</header>
+
+<div class="grid">
+
+  <!-- A: cenário atual -->
+  <section class="card">
+    <div class="top"><span class="lab">fig. 1 — seu cenário atual</span><span class="lab">opcional</span></div>
+    <div class="corpo">
+      <h2>Sessão estratégica ou call de diagnóstico</h2>
+      <p class="sub" style="font-size:13px;margin-top:6px">Do agendamento à venda, do jeito que roda hoje. Por mês.</p>
+
+      <label class="chk"><input type="checkbox" id="temAtual" checked> Já faço reuniões de venda</label>
+
+      <div id="blocoAtual">
+        <div class="dois">
+          <div class="campo">
+            <label for="invest">Investimento no mês</label>
+            <div class="in"><span>R$</span><input id="invest" type="number" inputmode="decimal" min="0" step="100" value="7000"></div>
+            <small>Anúncio pago. Vale pros dois cenários.</small>
+          </div>
+          <div class="campo">
+            <label for="ticketA">Ticket por venda</label>
+            <div class="in"><span>R$</span><input id="ticketA" type="number" inputmode="decimal" min="0" step="100" value="2000"></div>
+            <small>Vale pros dois cenários.</small>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label>Como você mede os agendamentos?</label>
+          <div class="radios">
+            <label><input type="radio" name="modoA" value="custo" checked><span>Custo por agendamento</span></label>
+            <label><input type="radio" name="modoA" value="num"><span>Número de agendamentos</span></label>
+          </div>
+        </div>
+
+        <div class="campo" id="campoCustoAg">
+          <label for="custoAg">Custo por agendamento</label>
+          <div class="in"><span>R$</span><input id="custoAg" type="number" inputmode="decimal" min="1" step="10" value="130"></div>
+          <small>Ref.: R$ 100 a 400, típico R$ 200. Verba do mês ÷ agendamentos.</small>
+        </div>
+        <div class="campo oculto" id="campoNumAg">
+          <label for="numAg">Agendamentos no mês</label>
+          <div class="in"><input id="numAg" type="number" inputmode="numeric" min="0" step="1" value="50"><span>agend.</span></div>
+        </div>
+
+        <div class="dois">
+          <div class="campo">
+            <label for="compA">Comparecimento</label>
+            <div class="in"><input id="compA" type="number" inputmode="decimal" min="0" max="100" step="1" value="70"><span>%</span></div>
+            <small>dos agendados</small>
+          </div>
+          <div class="campo">
+            <label for="fechA">Fechamento</label>
+            <div class="in"><input id="fechA" type="number" inputmode="decimal" min="0" max="100" step="1" value="15"><span>%</span></div>
+            <small>das reuniões realizadas</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- B: aulão -->
+  <section class="card">
+    <div class="top"><span class="lab">fig. 2 — aulão semanal</span><span class="lab">calcula sozinho</span></div>
+    <div class="corpo">
+      <h2>Do lead à venda</h2>
+      <p class="sub" style="font-size:13px;margin-top:6px">Só três números teus. As taxas vêm da chave de cenário.</p>
+
+      <div class="dois">
+        <div class="campo">
+          <label for="investB">Investimento no mês</label>
+          <div class="in"><span>R$</span><input id="investB" type="number" inputmode="decimal" min="0" step="100" value="7000"></div>
+          <small>Mesma verba do cenário atual.</small>
+        </div>
+        <div class="campo">
+          <label for="cpl">Custo por lead</label>
+          <div class="in"><span>R$</span><input id="cpl" type="number" inputmode="decimal" min="0.1" step="0.5" value="7"></div>
+          <small>Ref.: R$ 3 a 12. Lead = deixou o contato.</small>
+        </div>
+      </div>
+      <div class="campo">
+        <label for="ticketB">Ticket por venda</label>
+        <div class="in"><span>R$</span><input id="ticketB" type="number" inputmode="decimal" min="0" step="100" value="2000"></div>
+        <small>Mesmo ticket do cenário atual.</small>
+      </div>
+
+      <div class="campo">
+        <label>Chave de cenário</label>
+        <div class="radios tres">
+          <label><input type="radio" name="chave" value="pess"><span>Pessimista</span></label>
+          <label><input type="radio" name="chave" value="real" checked><span>Realista</span></label>
+          <label><input type="radio" name="chave" value="otim"><span>Otimista</span></label>
+        </div>
+        <small id="chaveNota">Realista: 90% entram no grupo · 35% ao vivo · 85% ficam até o pitch · 20% agendam reunião · 40% fecham.</small>
+      </div>
+
+      <label class="chk"><input type="checkbox" id="ajustar"> Ajustar as taxas na mão <i>(vira cenário personalizado)</i></label>
+      <div class="detalhe oculto" id="blocoTaxas">
+        <div class="dois">
+          <div class="campo">
+            <label for="txGrupo">Lead → entra no grupo</label>
+            <div class="in"><input id="txGrupo" type="number" inputmode="decimal" min="0" max="100" step="1" value="90"><span>%</span></div>
+          </div>
+          <div class="campo">
+            <label for="txVivo">Grupo → ao vivo</label>
+            <div class="in"><input id="txVivo" type="number" inputmode="decimal" min="0" max="100" step="1" value="35"><span>%</span></div>
+          </div>
+        </div>
+        <div class="dois">
+          <div class="campo">
+            <label for="txPitch">Ao vivo → fica até o pitch</label>
+            <div class="in"><input id="txPitch" type="number" inputmode="decimal" min="0" max="100" step="1" value="85"><span>%</span></div>
+          </div>
+          <div class="campo">
+            <label for="txReu">Pitch → reunião realizada</label>
+            <div class="in"><input id="txReu" type="number" inputmode="decimal" min="0" max="100" step="1" value="20"><span>%</span></div>
+            <small>no-show já descontado</small>
+          </div>
+        </div>
+        <div class="campo">
+          <label for="txFech">Reunião → venda</label>
+          <div class="in"><input id="txFech" type="number" inputmode="decimal" min="0" max="100" step="1" value="40"><span>%</span></div>
+        </div>
+      </div>
+
+      <label class="chk"><input type="checkbox" id="recorre"> Receita recorrente? <i>(só com histórico real)</i></label>
+      <div class="detalhe oculto" id="blocoRecorre">
+        <div class="campo">
+          <label for="meses">Tempo médio de permanência</label>
+          <div class="in"><input id="meses" type="number" inputmode="numeric" min="1" step="1" value="6"><span>meses</span></div>
+          <small>Ticket mensal × meses. Sem desconto nem cancelamento antes do prazo.</small>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FIG 3: funis -->
+<section class="fig">
+  <div class="cab"><span class="lab">fig. 3 — do lead à venda, no mês</span><span class="lab">03 / 05</span></div>
+  <div class="funis">
+    <div class="card" id="funilA">
+      <div class="top"><span class="lab">cenário atual</span><span class="lab">antes</span></div>
+      <div class="corpo"><h2>Sessão estratégica</h2><div id="etapasA" style="margin-top:8px"></div></div>
+    </div>
+    <div class="card">
+      <div class="top"><span class="lab">aulão semanal</span><span class="lab" id="tagChave">realista</span></div>
+      <div class="corpo"><h2>Aulão semanal</h2><div id="etapasB" style="margin-top:8px"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FIG 4: herói -->
+<section class="fig">
+  <div class="cab"><span class="lab">fig. 4 — conversão, retorno e time</span><span class="lab">04 / 05</span></div>
+  <div class="heroi">
+    <div class="card">
+      <div class="top"><span class="lab">conversão da reunião</span></div>
+      <div class="corpo"><div class="par"><div><div class="k">atual</div><div class="big antes" id="rpvA">—</div></div><div><div class="k">aulão</div><div class="big" id="rpvB">—</div></div></div><div class="f">vendas ÷ reuniões realizadas. De cada 100 reuniões, quantas viram contrato.</div></div>
+    </div>
+    <div class="card bracket">
+      <div class="top"><span class="lab">roi</span></div>
+      <div class="corpo"><div class="par"><div><div class="k">atual</div><div class="big antes" id="roiA">—</div></div><div><div class="k">aulão</div><div class="big azul" id="roiB">—</div></div></div><div class="f" id="roiF">(faturamento − investimento) ÷ investimento. Quanto volta pra cada real investido.</div></div>
+    </div>
+    <div class="card">
+      <div class="top"><span class="lab">closers necessários</span></div>
+      <div class="corpo"><div class="par"><div><div class="k">atual</div><div class="big antes" id="cloA">—</div></div><div><div class="k">aulão</div><div class="big" id="cloB">—</div></div></div><div class="f">pra dar conta das reuniões do mês. 1 closer faz 4 a 5 reuniões por dia, de segunda a sexta: ~94 por mês.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FIG 5: dinheiro -->
+<section class="fig">
+  <div class="cab"><span class="lab">fig. 5 — dinheiro · no mês, nos dois cenários</span><span class="lab">05 / 05</span></div>
+  <div class="cards" id="cards"></div>
+  <p class="nota" id="notaRec"></p>
+  <p class="nota">Referência de mercado: custo por lead R$ 3–12 · lead → grupo 90% · grupo → ao vivo 35% · fica até o pitch 85% · pitch → reunião 20% · reunião → venda 40% (realista). Sessão estratégica: custo por agendamento R$ 200, comparecimento 70%, fechamento 10–15%. Pessoas são número inteiro: cada etapa arredonda pra baixo. São números pra você se medir, não promessa. O teu número você descobre rodando.</p>
+</section>
+
+<footer>
+  <span class="frase">Para de correr atrás de lead. Faça o lead correr atrás de você.</span>
+  <span class="sig">tom<i></i></span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const num = id => { const v = parseFloat(String($(id).value).replace(',', '.')); return isFinite(v) ? v : 0; };
+  const pct = id => Math.min(Math.max(num(id), 0), 100) / 100;
+  const brl = v => isFinite(v) ? v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}) : '—';
+  const n0 = v => isFinite(v) ? v.toLocaleString('pt-BR', {maximumFractionDigits: 0}) : '—';
+  const n1 = v => isFinite(v) ? v.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1}) : '—';
+  const pc = v => isFinite(v) ? (v * 100).toLocaleString('pt-BR', {maximumFractionDigits: 0}) + '%' : '—';
+  const nz = v => (isFinite(v) && v !== Infinity && v !== -Infinity) ? v : NaN;
+  const CAP_CLOSER = 4.5 * 21; // 4 a 5 reuniões por dia × 21 dias úteis
+
+  // chave de cenário: lead→grupo · grupo→ao vivo · ao vivo→pitch · pitch→reunião · reunião→venda
+  const CHAVES = {
+    pess: { v: [80, 25, 75, 15, 30], nome: 'pessimista', nota: 'Pessimista: 80% entram no grupo · 25% ao vivo · 75% ficam até o pitch · 15% agendam reunião · 30% fecham.' },
+    real: { v: [90, 35, 85, 20, 40], nome: 'realista',   nota: 'Realista: 90% entram no grupo · 35% ao vivo · 85% ficam até o pitch · 20% agendam reunião · 40% fecham.' },
+    otim: { v: [90, 40, 85, 22, 40], nome: 'otimista',   nota: 'Otimista: 90% entram no grupo · 40% ao vivo · 85% ficam até o pitch · 22% agendam reunião · 40% fecham.' }
+  };
+  const TAXAS = ['txGrupo', 'txVivo', 'txPitch', 'txReu', 'txFech'];
+  let chaveAtual = 'real';
+
+  function aplicarChave(k){
+    chaveAtual = k;
+    CHAVES[k].v.forEach((v, i) => { $(TAXAS[i]).value = v; });
+    $('chaveNota').textContent = CHAVES[k].nota;
+    $('tagChave').textContent = CHAVES[k].nome;
+  }
+  document.querySelectorAll('input[name="chave"]').forEach(r => r.addEventListener('change', e => { aplicarChave(e.target.value); calc(); }));
+  TAXAS.forEach(id => $(id).addEventListener('input', () => {
+    chaveAtual = 'custom';
+    document.querySelectorAll('input[name="chave"]').forEach(r => r.checked = false);
+    $('chaveNota').textContent = 'Personalizado: taxas ajustadas na mão.';
+    $('tagChave').textContent = 'personalizado';
+  }));
+
+  function toggle(chk, bloco){ $(bloco).classList.toggle('oculto', !$(chk).checked); }
+
+  function espelha(a, b){ // copia o campo em edição pro outro
+    if (document.activeElement === $(a)) $(b).value = $(a).value;
+    else if (document.activeElement === $(b)) $(a).value = $(b).value;
+  }
+
+  function calc(){
+    toggle('temAtual', 'blocoAtual');
+    toggle('ajustar', 'blocoTaxas');
+    toggle('recorre', 'blocoRecorre');
+    const modoCusto = document.querySelector('input[name="modoA"]:checked').value === 'custo';
+    $('campoCustoAg').classList.toggle('oculto', !modoCusto);
+    $('campoNumAg').classList.toggle('oculto', modoCusto);
+
+    const temA = $('temAtual').checked;
+    if (temA) { espelha('invest', 'investB'); espelha('ticketA', 'ticketB'); }
+    const inv = temA ? num('invest') : num('investB');
+    const ticket = temA ? num('ticketA') : num('ticketB');
+    if (temA) { $('investB').value = inv; $('ticketB').value = ticket; }
+    const rec = $('recorre').checked ? Math.max(num('meses'), 1) : 1;
+
+    // B: aulão (gente é inteiro: arredonda pra baixo em cada etapa)
+    const cpl = num('cpl');
+    const leads = cpl > 0 ? Math.floor(inv / cpl) : NaN;
+    const grupo = Math.floor(leads * pct('txGrupo'));
+    const vivo = Math.floor(grupo * pct('txVivo'));
+    const pitch = Math.floor(vivo * pct('txPitch'));
+    const reuB = Math.floor(pitch * pct('txReu'));
+    const venB = Math.floor(reuB * pct('txFech'));
+    const fatB = venB * ticket * rec;
+
+    // A: atual
+    let agA = NaN, custoAg = NaN;
+    if (temA) {
+      if (modoCusto) { custoAg = num('custoAg'); agA = custoAg > 0 ? Math.floor(inv / custoAg) : NaN; }
+      else { agA = Math.floor(num('numAg')); custoAg = agA > 0 ? inv / agA : NaN; }
+    }
+    const reuA = Math.floor(agA * pct('compA'));
+    const venA = Math.floor(reuA * pct('fechA'));
+    const fatA = venA * ticket * rec;
+    const A = v => (temA && isFinite(v)) ? v : NaN;
+
+    // FIG 3
+    const etapa = (n, nome, como, val, frac, cls) =>
+      `<div class="etapa ${cls}"><span class="n">${n}</span><div><div class="nome">${nome}</div><div class="como">${como}</div></div><div class="val">${n0(val)}</div><div class="barra"><i style="width:${Math.max(0, Math.min(100, (frac || 0) * 100))}%"></i></div></div>`;
+    if (temA && isFinite(agA)) {
+      $('etapasA').innerHTML =
+        etapa('01', 'Agendamentos', 'custo: ' + brl(custoAg) + ' cada', agA, 1, 'antes') +
+        etapa('02', 'Reuniões realizadas', 'agendados × comparecimento', reuA, reuA / agA, 'antes') +
+        etapa('03', 'Vendas', 'reuniões × fechamento', venA, venA / agA, 'antes');
+    } else {
+      $('etapasA').innerHTML = '<p class="sub" style="font-size:13px">Marca "já faço reuniões de venda" e preenche o teu cenário pra comparar.</p>';
+    }
+    $('etapasB').innerHTML =
+      etapa('01', 'Leads captados', 'investimento ÷ custo por lead', leads, 1, '') +
+      etapa('02', 'No grupo', 'leads × ' + pc(pct('txGrupo')), grupo, grupo / leads, '') +
+      etapa('03', 'Ao vivo', 'grupo × ' + pc(pct('txVivo')), vivo, vivo / leads, '') +
+      etapa('04', 'Ficam até o pitch', 'ao vivo × ' + pc(pct('txPitch')), pitch, pitch / leads, '') +
+      etapa('05', 'Reuniões realizadas', 'pitch × ' + pc(pct('txReu')) + ' · ' + brl(nz(inv / reuB)) + ' cada', reuB, reuB / leads, '') +
+      etapa('06', 'Vendas', 'reuniões × ' + pc(pct('txFech')), venB, venB / leads, 'destaque');
+
+    // FIG 4
+    const rpvA = reuA > 0 ? venA / reuA : NaN, rpvB = reuB > 0 ? venB / reuB : NaN;
+    $('rpvA').textContent = pc(A(rpvA)); $('rpvB').textContent = pc(rpvB);
+    const roiA = inv > 0 ? (fatA - inv) / inv : NaN, roiB = inv > 0 ? (fatB - inv) / inv : NaN;
+    $('roiA').textContent = pc(A(roiA)); $('roiB').textContent = pc(roiB);
+    $('roiF').textContent = '(faturamento − investimento) ÷ investimento' + (rec > 1 ? ', com ' + rec + ' meses de permanência.' : '. Quanto volta pra cada real investido.');
+    const closers = r => (isFinite(r) && r > 0) ? Math.ceil(r / CAP_CLOSER) : NaN;
+    $('cloA').textContent = n0(A(closers(reuA))); $('cloB').textContent = n0(closers(reuB));
+
+    // FIG 5
+    const card = (t, a, b, f) => `<div class="m"><div class="t">${t}</div><div class="par"><div><div class="k">atual</div><div class="v a">${a}</div></div><div><div class="k">aulão</div><div class="v">${b}</div></div></div><div class="f">${f}</div></div>`;
+    $('cards').innerHTML =
+      card('Vendas', n0(A(venA)), n0(venB), 'reuniões realizadas × fechamento') +
+      card(rec > 1 ? 'Faturamento no período de permanência' : 'Faturamento', brl(A(fatA)), brl(fatB), rec > 1 ? 'vendas × ticket mensal × ' + rec + ' meses' : 'vendas × ticket') +
+      card('CAC', brl(nz(A(inv / venA))), brl(nz(inv / venB)), 'investimento ÷ vendas') +
+      card('Custo por reunião realizada', brl(nz(A(inv / reuA))), brl(nz(inv / reuB)), 'investimento ÷ reuniões realizadas') +
+      card('Custo por pessoa no funil', brl(A(custoAg)), brl(nz(inv / leads)), 'atual: por agendamento · aulão: por lead captado') +
+      card('Investimento', brl(A(inv)), brl(inv), 'mesmo valor nos dois cenários');
+    $('notaRec').textContent = rec > 1 ? 'Recorrência ligada: faturamento e ROI consideram ' + rec + ' meses de permanência. Só use com histórico real.' : '';
+  }
+
+  document.querySelectorAll('input').forEach(el => { el.addEventListener('input', calc); el.addEventListener('change', calc); });
+  aplicarChave('real');
+  calc();
+})();
+</script>
+</body>
+</html>
