@@ -51,8 +51,6 @@
   @media (max-width:480px){.dois{grid-template-columns:1fr}}
   .radios{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .radios.tres{grid-template-columns:1fr 1fr 1fr}
-  .radios.quatro{grid-template-columns:1fr 1fr 1fr 1fr}
-  @media (max-width:640px){.radios.quatro{grid-template-columns:1fr 1fr}}
   @media (max-width:480px){.radios.tres{grid-template-columns:1fr}}
   .radios label{border:1px solid var(--linha);padding:10px 12px;font-size:14px;cursor:pointer;display:flex;gap:8px;align-items:center;background:var(--grafite);color:var(--nota);transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease)}
   .radios label:has(input:checked){color:var(--papel);border-color:var(--papel)}
@@ -205,11 +203,10 @@
 
       <div class="campo">
         <label>Chave de cenário</label>
-        <div class="radios quatro">
+        <div class="radios tres">
           <label><input type="radio" name="chave" value="pess"><span>Pessimista</span></label>
-          <label><input type="radio" name="chave" value="real"><span>Realista</span></label>
+          <label><input type="radio" name="chave" value="real" checked><span>Realista</span></label>
           <label><input type="radio" name="chave" value="otim"><span>Otimista</span></label>
-          <label><input type="radio" name="chave" value="caso" checked><span>Franquia (real)</span></label>
         </div>
         <small id="chaveNota">Realista: 90% entram no grupo · 35% ao vivo · 85% ficam até o pitch · 20% agendam reunião · 40% fecham.</small>
       </div>
@@ -323,16 +320,22 @@
 
   // chave de cenário: lead→grupo · grupo→ao vivo · ao vivo→pitch · pitch→reunião · reunião→venda
   // ordem: lead→grupo · grupo→ao vivo · ao vivo→pitch · pitch→agenda · agendada→feita · reunião→venda
-  const CHAVES = {
+  // referência de mercado (projeto em branco)
+  const CHAVES_REF = {
     pess: { v: [80, 25, 75, 15, 80, 30], nome: 'pessimista', nota: 'Pessimista: 80% entram no grupo · 25% ao vivo · 75% ficam até o pitch · 15% agendam · 80% comparecem · 30% fecham.' },
     real: { v: [90, 35, 85, 20, 90, 40], nome: 'realista',   nota: 'Realista: 90% entram no grupo · 35% ao vivo · 85% ficam até o pitch · 20% agendam · 90% comparecem · 40% fecham.' },
-    otim: { v: [90, 40, 85, 22, 90, 40], nome: 'otimista',   nota: 'Otimista: 90% entram no grupo · 40% ao vivo · 85% ficam até o pitch · 22% agendam · 90% comparecem · 40% fecham.' },
-    // outubro/2026 da franquia: 1.852 leads · 1.667 no grupo · 517 ao vivo · 119 agendadas · 107 feitas · 33 vendas.
-    // As casas decimais existem só pra cada etapa, arredondada pra baixo, bater com a planilha.
-    caso: { v: [90.05, 31.05, 100, 23.1, 90, 31], nome: 'franquia · out/2026', nota: 'Case real (outubro): 90% entraram no grupo · 31% assistiram ao vivo · 23% de quem assistiu agendou · 90% compareceram · 31% fecharam. Até o pitch não foi medido: fica 100%.' }
+    otim: { v: [90, 40, 85, 22, 90, 40], nome: 'otimista',   nota: 'Otimista: 90% entram no grupo · 40% ao vivo · 85% ficam até o pitch · 22% agendam · 90% comparecem · 40% fecham.' }
   };
+  // franquia: realista = outubro/2026 de verdade (1.852 leads · 1.667 no grupo · 517 ao vivo · 119 agendadas · 107 feitas · 33 vendas).
+  // As casas decimais existem só pra cada etapa, arredondada pra baixo, bater com a planilha. Pessimista e otimista são variações em volta.
+  const CHAVES_FRANQUIA = {
+    pess: { v: [85, 25, 100, 18, 80, 25],            nome: 'pessimista', nota: 'Pessimista: 85% entram no grupo · 25% ao vivo · 18% de quem assistiu agendam · 80% comparecem · 25% fecham.' },
+    real: { v: [90.05, 31.05, 100, 23.1, 90, 31],    nome: 'realista',   nota: 'Realista = outubro de verdade: 90% entraram no grupo · 31% ao vivo · 23% de quem assistiu agendou · 90% compareceram · 31% fecharam. Até o pitch não foi medido: 100%.' },
+    otim: { v: [90, 35, 100, 25, 90, 35],            nome: 'otimista',   nota: 'Otimista: 90% entram no grupo · 35% ao vivo · 25% de quem assistiu agendam · 90% comparecem · 35% fecham.' }
+  };
+  let CHAVES = CHAVES_FRANQUIA;
   const TAXAS = ['txGrupo', 'txVivo', 'txPitch', 'txReu', 'txComp', 'txFech'];
-  let chaveAtual = 'caso';
+  let chaveAtual = 'real';
 
   // projetos: o que a página carrega. ?projeto=franquia (padrão) ou ?projeto=branco
   const PROJETOS = {
@@ -342,7 +345,7 @@
       h2A: 'Como rodava em agosto: anúncio, SDR, call com closer', h2FA: 'Agosto · SDR + closer', labA: 'agosto/2026',
       temAtual: true, espelhar: false, modoA: 'num',
       invest: 62312, ticketA: 16356, numAg: 289, custoAg: 216, compA: 42.3, fechA: 10,
-      investB: 50000, ticketB: 14497, cpl: 26.99, chave: 'caso', recorre: false
+      investB: 50000, ticketB: 14497, cpl: 26.99, chave: 'real', chaves: CHAVES_FRANQUIA, recorre: false
     },
     branco: {
       lab: 'referência de mercado · out/2026',
@@ -350,11 +353,12 @@
       h2A: 'Sessão estratégica ou call de diagnóstico', h2FA: 'Sessão estratégica', labA: 'antes',
       temAtual: true, espelhar: true, modoA: 'custo',
       invest: 7000, ticketA: 2000, numAg: 50, custoAg: 130, compA: 70, fechA: 15,
-      investB: 7000, ticketB: 2000, cpl: 7, chave: 'real', recorre: false
+      investB: 7000, ticketB: 2000, cpl: 7, chave: 'real', chaves: CHAVES_REF, recorre: false
     }
   };
   function aplicarProjeto(k){
     const P = PROJETOS[k] || PROJETOS.franquia;
+    CHAVES = P.chaves;
     $('projLab').textContent = P.lab; $('projNota').textContent = P.nota;
     $('h2A').textContent = P.h2A; $('h2FA').textContent = P.h2FA; $('labA').textContent = P.labA;
     $('temAtual').checked = P.temAtual; $('espelhar').checked = P.espelhar; $('recorre').checked = P.recorre;
