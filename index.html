@@ -51,6 +51,8 @@
   @media (max-width:480px){.dois{grid-template-columns:1fr}}
   .radios{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .radios.tres{grid-template-columns:1fr 1fr 1fr}
+  .radios.quatro{grid-template-columns:1fr 1fr 1fr 1fr}
+  @media (max-width:640px){.radios.quatro{grid-template-columns:1fr 1fr}}
   @media (max-width:480px){.radios.tres{grid-template-columns:1fr}}
   .radios label{border:1px solid var(--linha);padding:10px 12px;font-size:14px;cursor:pointer;display:flex;gap:8px;align-items:center;background:var(--grafite);color:var(--nota);transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease)}
   .radios label:has(input:checked){color:var(--papel);border-color:var(--papel)}
@@ -103,9 +105,17 @@
 <div class="wrap">
 
 <header>
-  <div class="cab"><span class="lab">calculadora · aulão semanal</span><span class="lab">referência de mercado · out/2026</span></div>
+  <div class="cab"><span class="lab">calculadora · aulão semanal</span><span class="lab" id="projLab">projeto · uma franquia · ago → out/2026</span></div>
   <h1>quantas reuniões você faz pra fechar <b>1</b>?</h1>
   <p class="sub">Compara o que você faz hoje com o funil de aulão semanal, com a tua verba. Preenche investimento, custo por lead e ticket. O resto é referência de mercado, e você escolhe se quer ver o cenário pessimista, realista ou otimista.</p>
+  <div class="campo" style="margin-top:20px;max-width:620px">
+    <label>Projeto</label>
+    <div class="radios">
+      <label><input type="radio" name="projeto" value="franquia" checked><span>Case · uma franquia (ago → out/2026)</span></label>
+      <label><input type="radio" name="projeto" value="branco"><span>Em branco · referência de mercado</span></label>
+    </div>
+    <small id="projNota">Números reais de uma franquia: agosto com o funil deles (anúncio, SDR, call), outubro 100% no aulão. Mexe à vontade, nada fica salvo.</small>
+  </div>
 </header>
 
 <div class="grid">
@@ -114,7 +124,7 @@
   <section class="card">
     <div class="top"><span class="lab">fig. 1 — seu cenário atual</span><span class="lab">opcional</span></div>
     <div class="corpo">
-      <h2>Sessão estratégica ou call de diagnóstico</h2>
+      <h2 id="h2A">Sessão estratégica ou call de diagnóstico</h2>
       <p class="sub" style="font-size:13px;margin-top:6px">Do agendamento à venda, do jeito que roda hoje. Por mês.</p>
 
       <label class="chk"><input type="checkbox" id="temAtual" checked> Já faço reuniões de venda</label>
@@ -124,14 +134,15 @@
           <div class="campo">
             <label for="invest">Investimento no mês</label>
             <div class="in"><span>R$</span><input id="invest" type="number" inputmode="decimal" min="0" step="100" value="7000"></div>
-            <small>Anúncio pago. Vale pros dois cenários.</small>
+            <small>Anúncio pago no mês.</small>
           </div>
           <div class="campo">
             <label for="ticketA">Ticket por venda</label>
             <div class="in"><span>R$</span><input id="ticketA" type="number" inputmode="decimal" min="0" step="100" value="2000"></div>
-            <small>Vale pros dois cenários.</small>
+            <small>Média por contrato.</small>
           </div>
         </div>
+        <label class="chk" style="margin-top:4px"><input type="checkbox" id="espelhar" checked> Mesma verba e mesmo ticket no aulão <i>(desmarca pra comparar meses diferentes)</i></label>
 
         <div class="campo">
           <label>Como você mede os agendamentos?</label>
@@ -178,7 +189,7 @@
         <div class="campo">
           <label for="investB">Investimento no mês</label>
           <div class="in"><span>R$</span><input id="investB" type="number" inputmode="decimal" min="0" step="100" value="7000"></div>
-          <small>Mesma verba do cenário atual.</small>
+          <small id="smInvB">Mesma verba do cenário atual.</small>
         </div>
         <div class="campo">
           <label for="cpl">Custo por lead</label>
@@ -189,15 +200,16 @@
       <div class="campo">
         <label for="ticketB">Ticket por venda</label>
         <div class="in"><span>R$</span><input id="ticketB" type="number" inputmode="decimal" min="0" step="100" value="2000"></div>
-        <small>Mesmo ticket do cenário atual.</small>
+        <small id="smTktB">Mesmo ticket do cenário atual.</small>
       </div>
 
       <div class="campo">
         <label>Chave de cenário</label>
-        <div class="radios tres">
+        <div class="radios quatro">
           <label><input type="radio" name="chave" value="pess"><span>Pessimista</span></label>
-          <label><input type="radio" name="chave" value="real" checked><span>Realista</span></label>
+          <label><input type="radio" name="chave" value="real"><span>Realista</span></label>
           <label><input type="radio" name="chave" value="otim"><span>Otimista</span></label>
+          <label><input type="radio" name="chave" value="caso" checked><span>Franquia (real)</span></label>
         </div>
         <small id="chaveNota">Realista: 90% entram no grupo · 35% ao vivo · 85% ficam até o pitch · 20% agendam reunião · 40% fecham.</small>
       </div>
@@ -207,27 +219,32 @@
         <div class="dois">
           <div class="campo">
             <label for="txGrupo">Lead → entra no grupo</label>
-            <div class="in"><input id="txGrupo" type="number" inputmode="decimal" min="0" max="100" step="1" value="90"><span>%</span></div>
+            <div class="in"><input id="txGrupo" type="number" inputmode="decimal" min="0" max="100" step="any" value="90"><span>%</span></div>
           </div>
           <div class="campo">
             <label for="txVivo">Grupo → ao vivo</label>
-            <div class="in"><input id="txVivo" type="number" inputmode="decimal" min="0" max="100" step="1" value="35"><span>%</span></div>
+            <div class="in"><input id="txVivo" type="number" inputmode="decimal" min="0" max="100" step="any" value="35"><span>%</span></div>
           </div>
         </div>
         <div class="dois">
           <div class="campo">
             <label for="txPitch">Ao vivo → fica até o pitch</label>
-            <div class="in"><input id="txPitch" type="number" inputmode="decimal" min="0" max="100" step="1" value="85"><span>%</span></div>
+            <div class="in"><input id="txPitch" type="number" inputmode="decimal" min="0" max="100" step="any" value="85"><span>%</span></div>
           </div>
           <div class="campo">
-            <label for="txReu">Pitch → reunião realizada</label>
-            <div class="in"><input id="txReu" type="number" inputmode="decimal" min="0" max="100" step="1" value="20"><span>%</span></div>
-            <small>no-show já descontado</small>
+            <label for="txReu">Pitch → agenda reunião</label>
+            <div class="in"><input id="txReu" type="number" inputmode="decimal" min="0" max="100" step="any" value="20"><span>%</span></div>
+            <small>de quem assistiu</small>
           </div>
         </div>
+          <div class="campo">
+            <label for="txComp">Reunião agendada → feita</label>
+            <div class="in"><input id="txComp" type="number" inputmode="decimal" min="0" max="100" step="any" value="90"><span>%</span></div>
+            <small>comparecimento</small>
+          </div>
         <div class="campo">
           <label for="txFech">Reunião → venda</label>
-          <div class="in"><input id="txFech" type="number" inputmode="decimal" min="0" max="100" step="1" value="40"><span>%</span></div>
+          <div class="in"><input id="txFech" type="number" inputmode="decimal" min="0" max="100" step="any" value="40"><span>%</span></div>
         </div>
       </div>
 
@@ -248,8 +265,8 @@
   <div class="cab"><span class="lab">fig. 3 — do lead à venda, no mês</span><span class="lab">03 / 05</span></div>
   <div class="funis">
     <div class="card" id="funilA">
-      <div class="top"><span class="lab">cenário atual</span><span class="lab">antes</span></div>
-      <div class="corpo"><h2>Sessão estratégica</h2><div id="etapasA" style="margin-top:8px"></div></div>
+      <div class="top"><span class="lab">cenário atual</span><span class="lab" id="labA">antes</span></div>
+      <div class="corpo"><h2 id="h2FA">Sessão estratégica</h2><div id="etapasA" style="margin-top:8px"></div></div>
     </div>
     <div class="card">
       <div class="top"><span class="lab">aulão semanal</span><span class="lab" id="tagChave">realista</span></div>
@@ -282,7 +299,7 @@
   <div class="cab"><span class="lab">fig. 5 — dinheiro · no mês, nos dois cenários</span><span class="lab">05 / 05</span></div>
   <div class="cards" id="cards"></div>
   <p class="nota" id="notaRec"></p>
-  <p class="nota">Referência de mercado: custo por lead R$ 3–12 · lead → grupo 90% · grupo → ao vivo 35% · fica até o pitch 85% · pitch → reunião 20% · reunião → venda 40% (realista). Sessão estratégica: custo por agendamento R$ 200, comparecimento 70%, fechamento 10–15%. Pessoas são número inteiro: cada etapa arredonda pra baixo. São números pra você se medir, não promessa. O teu número você descobre rodando.</p>
+  <p class="nota">Referência de mercado: custo por lead R$ 3–12 · lead → grupo 90% · grupo → ao vivo 35% · fica até o pitch 85% · pitch → agenda 20% · agendada → feita 90% · reunião → venda 40% (realista). Case da franquia: números reais de agosto e outubro de 2026, sem nome. Sessão estratégica: custo por agendamento R$ 200, comparecimento 70%, fechamento 10–15%. Pessoas são número inteiro: cada etapa arredonda pra baixo. São números pra você se medir, não promessa. O teu número você descobre rodando.</p>
 </section>
 
 <footer>
@@ -305,13 +322,50 @@
   const CAP_CLOSER = 4.5 * 21; // 4 a 5 reuniões por dia × 21 dias úteis
 
   // chave de cenário: lead→grupo · grupo→ao vivo · ao vivo→pitch · pitch→reunião · reunião→venda
+  // ordem: lead→grupo · grupo→ao vivo · ao vivo→pitch · pitch→agenda · agendada→feita · reunião→venda
   const CHAVES = {
-    pess: { v: [80, 25, 75, 15, 30], nome: 'pessimista', nota: 'Pessimista: 80% entram no grupo · 25% ao vivo · 75% ficam até o pitch · 15% agendam reunião · 30% fecham.' },
-    real: { v: [90, 35, 85, 20, 40], nome: 'realista',   nota: 'Realista: 90% entram no grupo · 35% ao vivo · 85% ficam até o pitch · 20% agendam reunião · 40% fecham.' },
-    otim: { v: [90, 40, 85, 22, 40], nome: 'otimista',   nota: 'Otimista: 90% entram no grupo · 40% ao vivo · 85% ficam até o pitch · 22% agendam reunião · 40% fecham.' }
+    pess: { v: [80, 25, 75, 15, 80, 30], nome: 'pessimista', nota: 'Pessimista: 80% entram no grupo · 25% ao vivo · 75% ficam até o pitch · 15% agendam · 80% comparecem · 30% fecham.' },
+    real: { v: [90, 35, 85, 20, 90, 40], nome: 'realista',   nota: 'Realista: 90% entram no grupo · 35% ao vivo · 85% ficam até o pitch · 20% agendam · 90% comparecem · 40% fecham.' },
+    otim: { v: [90, 40, 85, 22, 90, 40], nome: 'otimista',   nota: 'Otimista: 90% entram no grupo · 40% ao vivo · 85% ficam até o pitch · 22% agendam · 90% comparecem · 40% fecham.' },
+    // outubro/2026 da franquia: 1.852 leads · 1.667 no grupo · 517 ao vivo · 119 agendadas · 107 feitas · 33 vendas.
+    // As casas decimais existem só pra cada etapa, arredondada pra baixo, bater com a planilha.
+    caso: { v: [90.05, 31.05, 100, 23.1, 90, 31], nome: 'franquia · out/2026', nota: 'Case real (outubro): 90% entraram no grupo · 31% assistiram ao vivo · 23% de quem assistiu agendou · 90% compareceram · 31% fecharam. Até o pitch não foi medido: fica 100%.' }
   };
-  const TAXAS = ['txGrupo', 'txVivo', 'txPitch', 'txReu', 'txFech'];
-  let chaveAtual = 'real';
+  const TAXAS = ['txGrupo', 'txVivo', 'txPitch', 'txReu', 'txComp', 'txFech'];
+  let chaveAtual = 'caso';
+
+  // projetos: o que a página carrega. ?projeto=franquia (padrão) ou ?projeto=branco
+  const PROJETOS = {
+    franquia: {
+      lab: 'projeto · uma franquia · ago → out/2026',
+      nota: 'Números reais de uma franquia: agosto com o funil deles (anúncio, SDR, call), outubro 100% no aulão. Mexe à vontade, nada fica salvo.',
+      h2A: 'Como rodava em agosto: anúncio, SDR, call com closer', h2FA: 'Agosto · SDR + closer', labA: 'agosto/2026',
+      temAtual: true, espelhar: false, modoA: 'num',
+      invest: 62312, ticketA: 16356, numAg: 289, custoAg: 216, compA: 42.3, fechA: 10,
+      investB: 50000, ticketB: 14497, cpl: 26.99, chave: 'caso', recorre: false
+    },
+    branco: {
+      lab: 'referência de mercado · out/2026',
+      nota: 'Em branco: preenche com os teus números. As taxas são referência de mercado.',
+      h2A: 'Sessão estratégica ou call de diagnóstico', h2FA: 'Sessão estratégica', labA: 'antes',
+      temAtual: true, espelhar: true, modoA: 'custo',
+      invest: 7000, ticketA: 2000, numAg: 50, custoAg: 130, compA: 70, fechA: 15,
+      investB: 7000, ticketB: 2000, cpl: 7, chave: 'real', recorre: false
+    }
+  };
+  function aplicarProjeto(k){
+    const P = PROJETOS[k] || PROJETOS.franquia;
+    $('projLab').textContent = P.lab; $('projNota').textContent = P.nota;
+    $('h2A').textContent = P.h2A; $('h2FA').textContent = P.h2FA; $('labA').textContent = P.labA;
+    $('temAtual').checked = P.temAtual; $('espelhar').checked = P.espelhar; $('recorre').checked = P.recorre;
+    document.querySelector('input[name="modoA"][value="' + P.modoA + '"]').checked = true;
+    ['invest', 'ticketA', 'numAg', 'custoAg', 'compA', 'fechA', 'investB', 'ticketB', 'cpl'].forEach(id => { $(id).value = P[id]; });
+    document.querySelectorAll('input[name="chave"]').forEach(r => r.checked = (r.value === P.chave));
+    aplicarChave(P.chave);
+    $('ajustar').checked = false;
+    try { const u = new URL(location.href); u.searchParams.set('projeto', k); history.replaceState(null, '', u); } catch (e) {}
+  }
+  document.querySelectorAll('input[name="projeto"]').forEach(r => r.addEventListener('change', e => { aplicarProjeto(e.target.value); calc(); }));
 
   function aplicarChave(k){
     chaveAtual = k;
@@ -343,10 +397,16 @@
     $('campoNumAg').classList.toggle('oculto', modoCusto);
 
     const temA = $('temAtual').checked;
-    if (temA) { espelha('invest', 'investB'); espelha('ticketA', 'ticketB'); }
-    const inv = temA ? num('invest') : num('investB');
-    const ticket = temA ? num('ticketA') : num('ticketB');
-    if (temA) { $('investB').value = inv; $('ticketB').value = ticket; }
+    const esp = temA && $('espelhar').checked;
+    if (esp) { espelha('invest', 'investB'); espelha('ticketA', 'ticketB'); }
+    const invA = temA ? num('invest') : NaN;
+    const ticketA = temA ? num('ticketA') : NaN;
+    const inv = esp ? invA : num('investB');
+    const ticket = esp ? ticketA : num('ticketB');
+    if (esp) { $('investB').value = inv; $('ticketB').value = ticket; }
+    $('investB').readOnly = esp; $('ticketB').readOnly = esp;
+    $('smInvB').textContent = esp ? 'Mesma verba do cenário atual.' : 'Verba do mês no aulão.';
+    $('smTktB').textContent = esp ? 'Mesmo ticket do cenário atual.' : 'Ticket médio no aulão.';
     const rec = $('recorre').checked ? Math.max(num('meses'), 1) : 1;
 
     // B: aulão (gente é inteiro: arredonda pra baixo em cada etapa)
@@ -355,19 +415,20 @@
     const grupo = Math.floor(leads * pct('txGrupo'));
     const vivo = Math.floor(grupo * pct('txVivo'));
     const pitch = Math.floor(vivo * pct('txPitch'));
-    const reuB = Math.floor(pitch * pct('txReu'));
+    const agB = Math.floor(pitch * pct('txReu'));
+    const reuB = Math.floor(agB * pct('txComp'));
     const venB = Math.floor(reuB * pct('txFech'));
     const fatB = venB * ticket * rec;
 
     // A: atual
     let agA = NaN, custoAg = NaN;
     if (temA) {
-      if (modoCusto) { custoAg = num('custoAg'); agA = custoAg > 0 ? Math.floor(inv / custoAg) : NaN; }
-      else { agA = Math.floor(num('numAg')); custoAg = agA > 0 ? inv / agA : NaN; }
+      if (modoCusto) { custoAg = num('custoAg'); agA = custoAg > 0 ? Math.floor(invA / custoAg) : NaN; }
+      else { agA = Math.floor(num('numAg')); custoAg = agA > 0 ? invA / agA : NaN; }
     }
     const reuA = Math.floor(agA * pct('compA'));
     const venA = Math.floor(reuA * pct('fechA'));
-    const fatA = venA * ticket * rec;
+    const fatA = venA * ticketA * rec;
     const A = v => (temA && isFinite(v)) ? v : NaN;
 
     // FIG 3
@@ -386,13 +447,14 @@
       etapa('02', 'No grupo', 'leads × ' + pc(pct('txGrupo')), grupo, grupo / leads, '') +
       etapa('03', 'Ao vivo', 'grupo × ' + pc(pct('txVivo')), vivo, vivo / leads, '') +
       etapa('04', 'Ficam até o pitch', 'ao vivo × ' + pc(pct('txPitch')), pitch, pitch / leads, '') +
-      etapa('05', 'Reuniões realizadas', 'pitch × ' + pc(pct('txReu')) + ' · ' + brl(nz(inv / reuB)) + ' cada', reuB, reuB / leads, '') +
-      etapa('06', 'Vendas', 'reuniões × ' + pc(pct('txFech')), venB, venB / leads, 'destaque');
+      etapa('05', 'Reuniões agendadas', 'pitch × ' + pc(pct('txReu')), agB, agB / leads, '') +
+      etapa('06', 'Reuniões realizadas', 'agendadas × ' + pc(pct('txComp')) + ' · ' + brl(nz(inv / reuB)) + ' cada', reuB, reuB / leads, '') +
+      etapa('07', 'Vendas', 'reuniões × ' + pc(pct('txFech')), venB, venB / leads, 'destaque');
 
     // FIG 4
     const rpvA = reuA > 0 ? venA / reuA : NaN, rpvB = reuB > 0 ? venB / reuB : NaN;
     $('rpvA').textContent = pc(A(rpvA)); $('rpvB').textContent = pc(rpvB);
-    const roiA = inv > 0 ? (fatA - inv) / inv : NaN, roiB = inv > 0 ? (fatB - inv) / inv : NaN;
+    const roiA = invA > 0 ? (fatA - invA) / invA : NaN, roiB = inv > 0 ? (fatB - inv) / inv : NaN;
     $('roiA').textContent = pc(A(roiA)); $('roiB').textContent = pc(roiB);
     $('roiF').textContent = '(faturamento − investimento) ÷ investimento' + (rec > 1 ? ', com ' + rec + ' meses de permanência.' : '. Quanto volta pra cada real investido.');
     const closers = r => (isFinite(r) && r > 0) ? Math.ceil(r / CAP_CLOSER) : NaN;
@@ -403,15 +465,18 @@
     $('cards').innerHTML =
       card('Vendas', n0(A(venA)), n0(venB), 'reuniões realizadas × fechamento') +
       card(rec > 1 ? 'Faturamento no período de permanência' : 'Faturamento', brl(A(fatA)), brl(fatB), rec > 1 ? 'vendas × ticket mensal × ' + rec + ' meses' : 'vendas × ticket') +
-      card('CAC', brl(nz(A(inv / venA))), brl(nz(inv / venB)), 'investimento ÷ vendas') +
-      card('Custo por reunião realizada', brl(nz(A(inv / reuA))), brl(nz(inv / reuB)), 'investimento ÷ reuniões realizadas') +
+      card('CAC', brl(nz(A(invA / venA))), brl(nz(inv / venB)), 'investimento ÷ vendas') +
+      card('Custo por reunião realizada', brl(nz(A(invA / reuA))), brl(nz(inv / reuB)), 'investimento ÷ reuniões realizadas') +
       card('Custo por pessoa no funil', brl(A(custoAg)), brl(nz(inv / leads)), 'atual: por agendamento · aulão: por lead captado') +
-      card('Investimento', brl(A(inv)), brl(inv), 'mesmo valor nos dois cenários');
+      card('Investimento', brl(A(invA)), brl(inv), esp ? 'mesmo valor nos dois cenários' : 'verba de cada cenário');
     $('notaRec').textContent = rec > 1 ? 'Recorrência ligada: faturamento e ROI consideram ' + rec + ' meses de permanência. Só use com histórico real.' : '';
   }
 
   document.querySelectorAll('input').forEach(el => { el.addEventListener('input', calc); el.addEventListener('change', calc); });
-  aplicarChave('real');
+  const q = new URLSearchParams(location.search).get('projeto');
+  const p0 = PROJETOS[q] ? q : 'franquia';
+  document.querySelectorAll('input[name="projeto"]').forEach(r => r.checked = (r.value === p0));
+  aplicarProjeto(p0);
   calc();
 })();
 </script>
